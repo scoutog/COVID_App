@@ -34,7 +34,8 @@ ui <- fluidPage(
   #shinythemes::themeSelector(),
   theme=shinytheme("sandstone"),
   titlePanel(h2("COVID-19 Confirmed Cases and Deaths in the US",
-             h4("By: Scout Oatman-Gaitan"))),
+             h4("By: Scout Oatman-Gaitan")),
+             windowTitle = "COVID-19 Confirmed Cases and Deaths in the US"),
   
   sidebarLayout(
     sidebarPanel(
