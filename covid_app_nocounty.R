@@ -32,7 +32,7 @@ df <- df %>% arrange(State)
 # Creating UI
 ui <- fluidPage(
   #shinythemes::themeSelector(),
-  theme=shinytheme("lumen"),
+  theme=shinytheme("sandstone"),
   titlePanel(h2("COVID-19 Confirmed Cases and Deaths in the US",
                 h4("Created by Scout Oatman-Gaitan")),
              windowTitle = "COVID-19 Confirmed Cases and Deaths in the US"),
@@ -43,11 +43,9 @@ ui <- fluidPage(
       dateRangeInput("date", "Select a Date Range:", start="2020-01-22",
                      end=(Sys.Date()-1)),
       selectInput("state", "Select a State/Province:", unique(df$State), selected="New York"),
-      checkboxInput("yn", "Check to see all counties", value=TRUE),
-      selectInput("county", "County:", choices=NULL, selected=""),
       p("The visualizations are interactive. Zoom, click, and explore to get more information from the graph"),
       br(), p(em("* Click a county in the legend once to remove it and the graph will rescale")),
-      p(em("* Double click a county in the legend to focus on that county's data alone or just select it above")),
+      p(em("* Double click a county in the legend to focus on that county's data alone")),
       br(),
       a("Data Source: CSSE at Johns Hopkins University (updated daily)", 
         href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series"),
@@ -73,38 +71,21 @@ ui <- fluidPage(
 
 # Server
 server <- function(input, output, session) {
-  # Update county choice based on selected state
-  observeEvent(input$state, {
-    df1 <- df %>% filter(State==input$state)
-    updateSelectInput(session, "county", choices = unique(df1$County), selected="" )
-  })  
-  
+ 
   # Confirmed plot with if/else for empty county choice
   output$confirmed <- plotly::renderPlotly({
-    if (input$yn == TRUE){
-      df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
+  
+    df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
         filter(State == input$state) %>% 
         plot_ly(x = ~Date, y = ~Confirmed, type = 'scatter', mode = 'lines', color=~County)
-    }
-    else {
-      df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
-        filter(State == input$state) %>% filter(County == input$county) %>% 
-        plot_ly(x = ~Date, y = ~Confirmed, type = 'scatter', mode = 'lines', color=~County)
-    }
   })
   
   # Death count plot with same if/else
   output$deaths <- plotly::renderPlotly({
-    if (input$yn == TRUE){
       df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
         filter(State == input$state) %>% 
         plot_ly(x = ~Date, y = ~Deaths, type = 'scatter', mode = 'lines', color=~County)
-    }
-    else{
-      df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
-        filter(State == input$state) %>% filter(County == input$county) %>% 
-        plot_ly(x = ~Date, y = ~Deaths, type = 'scatter', mode = 'lines', color=~County)
-    }
+
   })
   
   #Confirmed cases pie chart
@@ -112,6 +93,9 @@ server <- function(input, output, session) {
     df1 <- df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
       filter(State==input$state) %>% group_by(County)
     fig <- plot_ly(df1, labels = ~County, values = ~Confirmed, type = 'pie')
+#    fig <- fig %>% layout(title = 'Confirmed Cases by County',
+#                          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+#                          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
     fig
   })
   
@@ -120,6 +104,9 @@ server <- function(input, output, session) {
     df1 <- df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
       filter(State==input$state) %>% group_by(County)
     fig <- plot_ly(df1, labels = ~County, values = ~Deaths, type = 'pie')
+    #    fig <- fig %>% layout(title = 'Confirmed Cases by County',
+    #                          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+    #                          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
     fig
   })
 }
