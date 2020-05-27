@@ -109,7 +109,7 @@ server <- function(input, output, session) {
   
   #Confirmed cases pie chart
   output$confirmed_pie <- plotly::renderPlotly({
-    df1 <- df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
+    df1 <- df %>% filter(Date == input$date[2]) %>% 
       filter(State==input$state) %>% group_by(County)
     fig <- plot_ly(df1, labels = ~County, values = ~Confirmed, type = 'pie')
     fig
@@ -117,7 +117,7 @@ server <- function(input, output, session) {
   
   #Confirmed cases pie chart
   output$deaths_pie <- plotly::renderPlotly({
-    df1 <- df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
+    df1 <- df %>% filter(Date == input$date[2]) %>% 
       filter(State==input$state) %>% group_by(County)
     fig <- plot_ly(df1, labels = ~County, values = ~Deaths, type = 'pie')
     fig
