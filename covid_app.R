@@ -42,7 +42,7 @@ ui <- fluidPage(
     sidebarPanel(
       # Inputs
       dateRangeInput("date", "Select a Date Range:", start="2020-01-22",
-                     end=(Sys.Date()-1)),
+                     end=max(df$Date)),
       selectInput("state", "Select a State/Province:", unique(df$State), selected="New York"),
       checkboxInput("yn", "Check to see all counties", value=TRUE),
       selectInput("county", "County:", choices=NULL, selected=""),
@@ -110,7 +110,7 @@ server <- function(input, output, session) {
   
   #Confirmed cases pie chart
   output$confirmed_pie <- plotly::renderPlotly({
-    df1 <- df %>% filter(Date == (input$date[2]-1)) %>% 
+    df1 <- df %>% filter(Date == max(Date)) %>% 
       filter(State==input$state) %>% group_by(County)
     fig <- plot_ly(df1, labels = ~County, values = ~Confirmed, type = 'pie')
     fig
@@ -118,7 +118,7 @@ server <- function(input, output, session) {
   
   #Confirmed cases pie chart
   output$deaths_pie <- plotly::renderPlotly({
-    df1 <- df %>% filter(Date == (input$date[2]-1)) %>% 
+    df1 <- df %>% filter(Date == max(Date)) %>% 
       filter(State==input$state) %>% group_by(County)
     fig <- plot_ly(df1, labels = ~County, values = ~Deaths, type = 'pie')
     fig
