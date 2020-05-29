@@ -27,7 +27,8 @@ df$Date <- as.Date(df$Date, "%m/%d/%y")
 df$State <- as.factor(df$State)
 df$County <- as.factor(df$County)
 # Alphabetical order
-df <- df %>% arrange(State)
+df <- df %>% arrange(State) %>% arrange(County) %>% 
+  arrange(Date)
 
 # Creating UI
 ui <- fluidPage(
