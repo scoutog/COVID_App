@@ -26,6 +26,8 @@ df <- df[!df$County=="Unassigned",]
 df$Date <- as.Date(df$Date, "%m/%d/%y")
 df$State <- as.factor(df$State)
 df$County <- as.factor(df$County)
+df$NewCases <- df$Confirmed - shift(df$Confirmed, n=1, fill=0, type="lag")
+df$NewCases[df$NewCases < 0 ] <- 0
 # Alphabetical order
 df <- df %>% arrange(Date) %>% arrange(County) %>% 
   arrange(State)
@@ -44,7 +46,7 @@ ui <- fluidPage(
       dateRangeInput("date", "Select a Date Range:", start="2020-01-22",
                      end=max(df$Date)),
       selectInput("state", "Select a State/Province:", unique(df$State), selected="New York"),
-      checkboxInput("yn", "Check to see all counties", value=TRUE),
+      checkboxInput("yn", "Check to see all counties compared or uncheck to focus on the county you select", value=TRUE),
       selectInput("county", "County:", choices=NULL, selected=""),
       p("The visualizations are interactive. Zoom, click, and explore to get more information from the graph"),
       br(), p(em("* Click a county in the legend once to remove it and the graph will rescale")),
@@ -63,6 +65,10 @@ ui <- fluidPage(
                  plotly::plotlyOutput("confirmed"),
                  br(),br(),
                  plotly::plotlyOutput("confirmed_pie")),
+        tabPanel("New Case Count",
+                 plotly::plotlyOutput("newCases"),
+                 br(),br(),
+                 plotly::plotlyOutput("newCases_pie")),
         tabPanel("Death Count",
                  plotly::plotlyOutput("deaths"),
                  br(), br(),
@@ -94,6 +100,20 @@ server <- function(input, output, session) {
     }
   })
   
+  # newCases
+  output$newCases <- plotly::renderPlotly({
+    if (input$yn == TRUE){
+      df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
+        filter(State == input$state) %>% 
+        plot_ly(x = ~Date, y = ~NewCases, type = 'scatter', mode = 'lines', color=~County)
+    }
+    else {
+      df %>% filter(Date >= input$date[1] & Date <= input$date[2]) %>% 
+        filter(State == input$state) %>% filter(County == input$county) %>% 
+        plot_ly(x = ~Date, y = ~NewCases, type = 'scatter', mode = 'lines', color=~County)
+    }
+  })
+  
   # Death count plot with same if/else
   output$deaths <- plotly::renderPlotly({
     if (input$yn == TRUE){
@@ -116,7 +136,15 @@ server <- function(input, output, session) {
     fig
   })
   
-  #Confirmed cases pie chart
+  #newCases_pie
+  output$newCases_pie <- plotly::renderPlotly({
+    df1 <- df %>% filter(Date == max(Date)) %>% 
+      filter(State==input$state) %>% group_by(County)
+    fig <- plot_ly(df1, labels = ~County, values = ~NewCases, type = 'pie')
+    fig
+  })
+  
+  #Death cases pie chart
   output$deaths_pie <- plotly::renderPlotly({
     df1 <- df %>% filter(Date == max(Date)) %>% 
       filter(State==input$state) %>% group_by(County)
