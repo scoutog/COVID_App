@@ -19,10 +19,12 @@ deaths <- deaths %>% gather(Date, Deaths, 13:dim(deaths)[2])
 deaths <- deaths[,-c(1:5,8:12)]
 names(deaths)[names(deaths) == "Admin2"] <- "County"
 names(deaths)[names(deaths) == "Province_State"] <- "State"
+data_table_1 = data.table(confirmed)
+data_table_2 = data.table(deaths)
 
 # Merge and clean up data
-df <- merge(confirmed, deaths)
-rm(confirmed, deaths)
+df <- merge(data_table_1, data_table_2)
+rm(confirmed, deaths, data_table_1, data_table_2)
 df <- df[!df$County=="Unassigned",]
 df$Date <- as.Date(df$Date, "%m/%d/%y")
 df$State <- as.factor(df$State)
@@ -42,7 +44,7 @@ df <- df %>% arrange(Date) %>% arrange(County) %>%
 ui <- fluidPage(
   #shinythemes::themeSelector(),
   theme=shinytheme("lumen"),
-  titlePanel(h2("COVID-19 Confirmed Cases and Deaths in the US",
+  titlePanel(h2("COVID-19 Confirmed Cases and Deaths in the US by State and County",
                 h4("Created by Scout Oatman-Gaitan")),
              windowTitle = "COVID-19 Confirmed Cases and Deaths in the US"),
   
@@ -52,7 +54,7 @@ ui <- fluidPage(
       dateRangeInput("date", "Select a Date Range:", start="2020-01-22",
                      end=max(df$Date)),
       selectInput("state", "Select a State/Province:", unique(df$State), selected="New York"),
-      checkboxInput("yn", "Check to see all counties compared or uncheck to focus on the county you select", value=TRUE),
+      checkboxInput("yn", "Check to see all the counties of a state compared or uncheck to focus on the county you select below", value=TRUE),
       selectInput("county", "County:", choices=NULL, selected=""),
       p("The visualizations are interactive. Zoom, click, and explore to get more information from the graph"),
       br(), p(em("* Click a county in the legend once to remove it and the graph will rescale")),
@@ -67,7 +69,7 @@ ui <- fluidPage(
     mainPanel(
       # Tabbed outputs
       tabsetPanel(
-        tabPanel("Confirmed Total Count",
+        tabPanel("Total Confirmed Count",
                  plotly::plotlyOutput("confirmed"),
                  br(),br(),
                  plotly::plotlyOutput("confirmed_pie")),
@@ -75,7 +77,7 @@ ui <- fluidPage(
                  plotly::plotlyOutput("newCases"),
                  br(),br(),
                  plotly::plotlyOutput("newCases_pie")),
-        tabPanel("Death Total Count",
+        tabPanel("Total Death Count",
                  plotly::plotlyOutput("deaths"),
                  br(), br(),
                  plotly::plotlyOutput("deaths_pie")),
