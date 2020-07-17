@@ -54,7 +54,7 @@ ui <- fluidPage(
       dateRangeInput("date", "Select a Date Range:", start="2020-01-22",
                      end=max(df$Date)),
       selectInput("state", "Select a State/Province:", unique(df$State), selected="New York"),
-      checkboxInput("yn", "Check to see all the counties of a state compared or uncheck to focus on the county you select below", value=TRUE),
+      checkboxInput("yn", "Check to see all the counties of a state graphed together or uncheck to focus on only the county you select below", value=TRUE),
       selectInput("county", "County:", choices=NULL, selected=""),
       p("The visualizations are interactive. Zoom, click, and explore to get more information from the graph"),
       br(), p(em("* Click a county in the legend once to remove it and the graph will rescale")),
