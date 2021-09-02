@@ -1,0 +1,13 @@
+name: COVID_App_Raw
+title: COVID_App_Raw
+username:
+account: scout-oatman-gaitan
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4580079
+bundleId: 4993439
+url: https://scout-oatman-gaitan.shinyapps.io/COVID_App_Raw/
+when: 1630594693.99026
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: covid_app_nocounty.R|covid_app_rolling.R
