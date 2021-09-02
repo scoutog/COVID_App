@@ -1,0 +1,13 @@
+name: COVID_App
+title: COVID_App
+username:
+account: scout-oatman-gaitan
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2322452
+bundleId: 4991564
+url: https://scout-oatman-gaitan.shinyapps.io/COVID_App/
+when: 1630556480.36271
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: covid_app_nocounty.R
