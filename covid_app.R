@@ -19,26 +19,22 @@ deaths <- deaths %>% gather(Date, Deaths, 13:dim(deaths)[2])
 deaths <- deaths[,-c(1:5,8:12)]
 names(deaths)[names(deaths) == "Admin2"] <- "County"
 names(deaths)[names(deaths) == "Province_State"] <- "State"
-data_table_1 = data.table(confirmed)
-data_table_2 = data.table(deaths)
 
 # Merge and clean up data
-df <- merge(data_table_1, data_table_2)
-rm(confirmed, deaths, data_table_1, data_table_2)
+df <- merge(data.table(confirmed), data.table(deaths))
+rm(confirmed, deaths)
 df <- df[!df$County=="Unassigned",]
 df$Date <- as.Date(df$Date, "%m/%d/%y")
 df$State <- as.factor(df$State)
 df$County <- as.factor(df$County)
 
-df$NewCases <- df$Confirmed - shift(df$Confirmed, n=1, fill=0, type="lag")
+df <- df[with(df, order(County, State, Date)),]
+
+df$NewCases <- df$Confirmed - shift(df$Confirmed, n=1, fill=0, type="shift")
 df$NewCases[df$NewCases < 0 ] <- 0
 
-df$NewDeaths <- df$Deaths - shift(df$Deaths, n=1, fill=0, type="lag")
+df$NewDeaths <- df$Deaths - shift(df$Deaths, n=1, fill=0, type="shift")
 df$NewDeaths[df$NewDeaths < 0 ] <- 0
-
-# Alphabetical order
-df <- df %>% arrange(Date) %>% arrange(County) %>% 
-  arrange(State)
 
 # Creating UI
 ui <- fluidPage(
