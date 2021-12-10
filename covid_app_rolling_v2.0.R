@@ -90,7 +90,8 @@ url2_df <- read.csv(url2, colClasses=c(fips="character"))
 #fig
 
 df_today <- df %>% filter(Date == Sys.Date()-1)
-fips_mapping <- read_csv("county to fips.csv")
+fips_url <- "https://raw.githubusercontent.com/scoutog/COVID_App/master/county%20to%20fips.csv"
+fips_mapping <- read_csv(fips_url)
 
 df_map <- left_join(df_today, fips_mapping, 
                     by = c("County" = "County", "State" = "State"))
