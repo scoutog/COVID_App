@@ -51,7 +51,7 @@ df <- df %>%
 # Creating UI
 ui <- fluidPage(
   #shinythemes::themeSelector(),
-  theme=shinytheme("lumen"),
+  theme=shinytheme("cosmo"),
   titlePanel(h2("COVID-19 Confirmed Cases and Deaths in the US by State and County",
                 h4("Created by Scout Oatman-Gaitan")),
              windowTitle = "COVID-19 Confirmed Cases and Deaths in the US"),
@@ -61,13 +61,11 @@ ui <- fluidPage(
       # Inputs
       dateRangeInput("date", "Select a Date Range:", start="2020-01-22",
                      end=max(df$Date)),
-      selectInput("state", "Select a State/Province:", unique(df$State), selected="New York"),
+      selectInput("state", "Select a State:", unique(df$State), selected="New York"),
       selectInput("county", "Select a County:", choices=NULL, selected=""),
       checkboxInput("yn", "Check here to see all the counties of a state graphed together or uncheck to focus on only the county you select above", value=TRUE),
       br(),
       p("The visualizations are interactive. Zoom, click, and explore to get more information from the graph"),
-      p(em("* Click a county in the legend once to remove it and the graph will rescale")),
-      p(em("* Double click a county in the legend to focus on that county's data alone or just select it above")),
       br(),
       a("Data Source: CSSE at Johns Hopkins University (updated daily)", 
         href="https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series"),
